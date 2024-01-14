@@ -1,0 +1,10 @@
+# controllers:
+#     resource:
+#         path: ../src/Controller/
+#         namespace: App\Controller
+#     type: attribute
+
+api_post_show:
+    path:       /user
+    controller: App\Entrypoint\Controller\Dashboard\User\RegisterUserController
+    methods:    POST

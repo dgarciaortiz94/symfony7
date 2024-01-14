@@ -1,0 +1,67 @@
+version: "3.8"
+services:
+    api:
+        container_name: symfony7
+        hostname: symfony7
+        build: .
+        ports: 
+            - 80:80
+        volumes:
+            - .:/var/www/html/symfony7
+            - ./.docker/php/conf.d:/usr/local/etc/php/conf.d
+        extra_hosts:
+            - "host.docker.internal:host-gateway"
+        depends_on:
+            - db
+        networks:
+            - symfony7_network
+
+    db:
+        image: mysql:8.0
+        container_name: symfony7_db
+        hostname: symfony7_db
+        ports: 
+            - 3306:3306
+        # command: --default-authentication-plugin=mysql_native_password
+        environment:
+            MYSQL_DATABASE: symfony7
+            MYSQL_PASSWORD: test
+            MYSQL_ROOT_PASSWORD: test
+        volumes:
+            - ./.docker/mysql/entrypoint:/docker-entrypoint-initdb.d
+        #     - ./mysql/conf.d:/etc/mysql/conf.d
+        #     - persistent:/var/lib/mysql
+        networks:
+            - symfony7_network
+    
+    # redis:
+    #     image: redis:latest
+    #     container_name: mo2o-redis
+    #     restart: always
+    #     ports:
+    #       - 6379:6379
+    #     command: redis-server --save 20 1 --loglevel warning --requirepass test
+    #     networks:
+    #         - default
+    
+    symfony7-phpmyadmin:
+        container_name: symfony7_phpmyadmin
+        hostname: symfony7_phpmyadmin
+        image: phpmyadmin/phpmyadmin
+        ports:
+            - 8000:80
+        environment:
+            MYSQL_USER: root
+            MYSQL_PASSWORD: test
+            MYSQL_ROOT_PASSWORD: test
+        depends_on:
+            - db
+        networks:
+            - symfony7_network
+
+networks:
+    symfony7_network:
+        driver: bridge
+
+volumes:
+    persistent:
